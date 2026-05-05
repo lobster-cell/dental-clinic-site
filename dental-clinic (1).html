@@ -1,0 +1,1922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lumen Dental — Modern Dentistry, Refined</title>
+<meta name="description" content="Lumen Dental — A modern dental clinic delivering precise, calm, and elegant dental care." />
+
+<!-- Suppress Tailwind CDN's production warning (we knowingly use the CDN here) -->
+<script>
+  (function () {
+    const _w = console.warn;
+    console.warn = function (...args) {
+      if (args.length && typeof args[0] === 'string' && args[0].indexOf('cdn.tailwindcss.com') !== -1) return;
+      return _w.apply(console, args);
+    };
+  })();
+</script>
+
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Google Fonts: Instrument Serif (display) + DM Sans (body) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+
+<!-- GSAP + ScrollTrigger -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<!-- Three.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          paper:      '#EFE9DB',
+          'paper-1':  '#F5F0E2',
+          'paper-2':  '#E5DFCE',
+          'paper-3':  '#D9D2BD',
+          ink: {
+            900: '#1A1614',
+            800: '#2A2520',
+            700: '#3D3832',
+            600: '#5C564E',
+            500: '#7A7468',
+            400: '#9A9388',
+            300: '#BAB3A8',
+            200: '#D2CBC0',
+            100: '#E2DCCC',
+          },
+          sun: {
+            DEFAULT: '#F5C518',
+            light:   '#FFD64A',
+            deep:    '#8E6900',
+          },
+        },
+        fontFamily: {
+          display: ['"Instrument Serif"', 'serif'],
+          sans: ['"DM Sans"', 'system-ui', 'sans-serif'],
+        },
+      }
+    }
+  }
+</script>
+
+<style>
+  :root {
+    --paper:    #EFE9DB;
+    --paper-1:  #F5F0E2;
+    --paper-2:  #E5DFCE;
+    --paper-3:  #D9D2BD;
+    --ink-900:  #1A1614;
+    --ink-800:  #2A2520;
+    --ink-700:  #3D3832;
+    --ink-600:  #5C564E;
+    --ink-500:  #7A7468;
+    --ink-400:  #9A9388;
+    --ink-300:  #BAB3A8;
+    --ink-200:  #D2CBC0;
+    --ink-100:  #E2DCCC;
+    --sun:      #F5C518;
+    --sun-light:#FFD64A;
+    --sun-deep: #8E6900;
+  }
+
+  * { -webkit-font-smoothing: antialiased; }
+  html { scroll-behavior: smooth; background: var(--paper); }
+  body {
+    background: var(--paper);
+    color: var(--ink-900);
+    font-family: 'DM Sans', system-ui, sans-serif;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Site-wide grain overlay (warm newsprint feel) */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9000;
+    opacity: 0.18;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.65 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 240px 240px;
+  }
+  /* Subtle paper-warmth gradient */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 8999;
+    background:
+      radial-gradient(ellipse 80% 60% at 80% 0%, rgba(245,197,24,0.06), transparent 60%),
+      radial-gradient(ellipse 60% 40% at 0% 100%, rgba(26,22,20,0.05), transparent 60%);
+  }
+
+  .font-display { font-family: 'Instrument Serif', serif; font-weight: 400; letter-spacing: -0.01em; }
+  .italic-display { font-family: 'Instrument Serif', serif; font-style: italic; }
+
+  /* Hero canvas */
+  #hero-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+
+  /* Grain texture */
+  .grain {
+    position: absolute; inset: 0;
+    pointer-events: none;
+    opacity: 0.06;
+    z-index: 1;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Subtle lined separator */
+  .hairline {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(26,22,20,0.288), transparent);
+  }
+
+  /* Underline link effect */
+  .link-underline {
+    position: relative;
+    display: inline-block;
+  }
+  .link-underline::after {
+    content: '';
+    position: absolute;
+    left: 0; bottom: -3px;
+    width: 100%; height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform .5s cubic-bezier(.77,0,.18,1);
+  }
+  .link-underline:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  /* Marquee */
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee 35s linear infinite;
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* Yellow underline accent */
+  .accent-line {
+    background: linear-gradient(90deg, var(--sun), transparent);
+    height: 1px;
+  }
+
+  /* Service card */
+  .service-card {
+    position: relative;
+    overflow: hidden;
+    transition: transform .6s cubic-bezier(.77,0,.18,1);
+  }
+  .service-card:hover { transform: translateY(-4px); }
+  .service-card .num {
+    position: absolute;
+    top: 1.25rem; right: 1.25rem;
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    color: rgba(245,197,24,0.55);
+    font-size: 1rem;
+  }
+  .service-card .arrow {
+    transition: transform .5s cubic-bezier(.77,0,.18,1);
+  }
+  .service-card:hover .arrow { transform: translate(6px,-6px); }
+  .service-card::before {
+    content:'';
+    position:absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(245,197,24,0) 0%, rgba(245,197,24,0) 70%, rgba(245,197,24,0.06) 100%);
+    opacity: 0;
+    transition: opacity .6s ease;
+    pointer-events: none;
+  }
+  .service-card:hover::before { opacity: 1; }
+
+  /* Booking input */
+  .field {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(26,22,20,0.288);
+    padding: 14px 0;
+    color: var(--ink-900);
+    width: 100%;
+    transition: border-color .4s ease;
+    font-size: 16px;
+    outline: none;
+  }
+  .field:focus {
+    border-bottom-color: var(--sun);
+  }
+  .field::placeholder { color: rgba(26,22,20,0.42); }
+  select.field { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%23F5C518' stroke-width='1.5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 4px center; }
+
+  /* Button shine */
+  .btn-shine {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .btn-shine::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -120%;
+    width: 60%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+    transform: skewX(-20deg);
+    transition: left .8s cubic-bezier(.77,0,.18,1);
+    z-index: 1;
+  }
+  .btn-shine:hover::after { left: 130%; }
+
+  /* ===== 3D Testimonial Carousel ===== */
+  .carousel-wrapper {
+    position: relative;
+    user-select: none;
+  }
+  .carousel-stage {
+    perspective: 1400px;
+    perspective-origin: 50% 45%;
+    height: 540px;
+    position: relative;
+    overflow: hidden;
+    /* Side fade mask so cards dissolve into background */
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
+            mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
+  }
+  @media (max-width: 768px) {
+    .carousel-stage {
+      height: 480px;
+      perspective: 900px;
+      -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 4%, #000 96%, transparent 100%);
+              mask-image: linear-gradient(90deg, transparent 0%, #000 4%, #000 96%, transparent 100%);
+    }
+  }
+  @media (max-width: 480px) {
+    .carousel-stage { height: 440px; perspective: 700px; }
+  }
+  .carousel-track {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    will-change: transform;
+    cursor: grab;
+    touch-action: pan-y;
+  }
+  .carousel-track.is-dragging { cursor: grabbing; }
+
+  .carousel-card {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: min(440px, 88vw);
+    height: 460px;
+    margin-left: calc(min(440px, 88vw) / -2);
+    margin-top: -230px;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+    will-change: transform, opacity;
+    background: var(--paper-1);
+    border: 1px solid rgba(26,22,20,0.12);
+    padding: 2.25rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: box-shadow .6s ease;
+    color: var(--ink-900);
+    overflow: hidden;
+  }
+  @media (max-width: 768px) {
+    .carousel-card {
+      width: min(400px, 88vw);
+      height: 420px;
+      margin-left: calc(min(400px, 88vw) / -2);
+      margin-top: -210px;
+      padding: 1.75rem;
+    }
+    /* Shrink large quote text on mobile */
+    .carousel-card p.font-display { font-size: 1.2rem !important; line-height: 1.4 !important; }
+  }
+  @media (max-width: 480px) {
+    .carousel-card {
+      width: 88vw;
+      height: 400px;
+      margin-left: -44vw;
+      margin-top: -200px;
+      padding: 1.5rem;
+    }
+    .carousel-card p.font-display { font-size: 1.1rem !important; }
+  }
+  @media (min-width: 1024px) {
+    .carousel-card { padding: 2.75rem; }
+  }
+  .carousel-card.is-front {
+    box-shadow:
+      0 24px 60px -18px rgba(26,22,20,0.25),
+      0 0 0 1px rgba(245,197,24,0.55),
+      0 0 80px -10px rgba(245,197,24,0.35);
+    background: #FFFFFF;
+  }
+  /* Yellow corner accent */
+  .carousel-card::before {
+    content:'';
+    position:absolute;
+    top: 0; left: 0;
+    width: 32px; height: 1px;
+    background: var(--sun);
+    transition: width .6s cubic-bezier(.77,0,.18,1);
+  }
+  .carousel-card::after {
+    content:'';
+    position:absolute;
+    top: 0; left: 0;
+    width: 1px; height: 32px;
+    background: var(--sun);
+    transition: height .6s cubic-bezier(.77,0,.18,1);
+  }
+  .carousel-card.is-front::before { width: 80px; }
+  .carousel-card.is-front::after { height: 80px; }
+
+  /* Carousel controls */
+  .carousel-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    margin-top: 2.5rem;
+  }
+  .carousel-btn {
+    width: 52px; height: 52px;
+    border-radius: 9999px;
+    border: 1px solid rgba(26,22,20,0.288);
+    color: var(--ink-900);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .35s ease;
+    background: var(--paper-1);
+  }
+  .carousel-btn:hover {
+    border-color: var(--sun);
+    color: var(--sun-deep);
+    background: var(--paper);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(245,197,24,0.2);
+  }
+  .carousel-dots {
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+  }
+  .carousel-dot {
+    width: 8px; height: 8px;
+    border-radius: 9999px;
+    background: rgba(26,22,20,0.32);
+    transition: all .4s ease;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+  }
+  .carousel-dot.is-active {
+    width: 28px;
+    background: var(--sun);
+  }
+
+  /* Floor reflection hint */
+  .carousel-floor {
+    position: absolute;
+    left: 50%;
+    bottom: 4%;
+    transform: translateX(-50%);
+    width: 70%;
+    height: 30px;
+    background: radial-gradient(ellipse at center, rgba(245,197,24,0.18), transparent 70%);
+    filter: blur(8px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Reveal animation prep */
+  .reveal { opacity: 0; transform: translateY(28px); }
+  .reveal-x { opacity: 0; transform: translateX(-28px); }
+
+  /* Mobile menu */
+  #mobile-menu {
+    transform: translateY(-100%);
+    transition: transform .55s cubic-bezier(.77,0,.18,1);
+  }
+  #mobile-menu.open { transform: translateY(0); }
+
+  /* Cursor dot for desktop */
+  @media (hover: hover) and (min-width: 1024px) {
+    .cursor-dot {
+      position: fixed;
+      top: 0; left: 0;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--ink-900);
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      z-index: 9999;
+      transition: width .25s, height .25s, background .25s;
+    }
+    .cursor-dot.expand {
+      width: 36px; height: 36px;
+      background: var(--sun);
+      mix-blend-mode: multiply;
+    }
+  }
+
+  /* Gradient overlay on hero bottom — fade to paper */
+  .hero-fade {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 35%;
+    background: linear-gradient(180deg, transparent, var(--paper));
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  /* Doctor portrait - SVG illustration container */
+  .portrait-frame {
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(circle at 30% 20%, #6B6660, #2A2520);
+  }
+
+  /* Tooth SVG accent — dark on paper for legibility */
+  .tooth-accent {
+    color: var(--ink-900);
+  }
+
+  /* Stats counter */
+  .stat-num {
+    font-feature-settings: "tnum";
+  }
+
+  /* Toast */
+  #toast {
+    transform: translateY(120%);
+    transition: transform .5s cubic-bezier(.77,0,.18,1);
+  }
+  #toast.show { transform: translateY(0); }
+
+  /* Section number marker */
+  .sec-marker {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    color: var(--sun-deep);
+    font-size: 0.95rem;
+    letter-spacing: 0.02em;
+  }
+</style>
+</head>
+<body>
+
+<!-- Cursor dot -->
+<div class="cursor-dot hidden lg:block"></div>
+
+<!-- ============== NAV ============== -->
+<header id="nav" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500">
+  <div class="max-w-[1400px] mx-auto px-6 lg:px-10 py-5 flex items-center justify-between">
+    <a href="#home" class="flex items-center gap-2 group">
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" class="tooth-accent">
+        <path d="M16 4c-3.5 0-5.5 1.5-7 1.5S6 4.5 5 6.5C3.5 9.5 4 14 5.5 18c1 2.7 1.8 5 2.6 7 .6 1.5 1.6 2.5 2.7 2.5 1.3 0 1.8-1.5 2.5-3.5.6-1.7 1.3-3 2.7-3s2.1 1.3 2.7 3c.7 2 1.2 3.5 2.5 3.5 1.1 0 2.1-1 2.7-2.5.8-2 1.6-4.3 2.6-7 1.5-4 2-8.5.5-11.5C26 4.5 24.5 5.5 23 5.5S19.5 4 16 4z" fill="currentColor"/>
+      </svg>
+      <span class="font-display text-2xl tracking-tight">Lumen<span class="italic-display text-sun-deep">.</span></span>
+    </a>
+
+    <nav class="hidden lg:flex items-center gap-10 text-sm tracking-wide">
+      <a href="#about" class="link-underline text-ink-700 hover:text-ink-900">About</a>
+      <a href="#services" class="link-underline text-ink-700 hover:text-ink-900">Services</a>
+      <a href="#doctor" class="link-underline text-ink-700 hover:text-ink-900">Doctor</a>
+      <a href="#reviews" class="link-underline text-ink-700 hover:text-ink-900">Reviews</a>
+      <a href="#contact" class="link-underline text-ink-700 hover:text-ink-900">Contact</a>
+    </nav>
+
+    <div class="flex items-center gap-3">
+      <a href="#booking" class="hidden md:inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-sun text-ink-900 text-sm font-medium btn-shine hover:bg-sun-light transition-colors">
+        Book a visit
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 11L11 3M11 3H4M11 3V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </a>
+      <button id="menu-toggle" class="lg:hidden p-2 -mr-2" aria-label="Open menu">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+          <path d="M3 7h16M3 15h16" stroke="white" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile menu -->
+<div id="mobile-menu" class="fixed inset-0 z-40 bg-paper-2 lg:hidden flex flex-col">
+  <div class="flex-1 flex flex-col justify-center items-start px-8 gap-6">
+    <a href="#about" class="mobile-link font-display text-5xl">About</a>
+    <a href="#services" class="mobile-link font-display text-5xl">Services</a>
+    <a href="#doctor" class="mobile-link font-display text-5xl">Doctor</a>
+    <a href="#reviews" class="mobile-link font-display text-5xl">Reviews</a>
+    <a href="#contact" class="mobile-link font-display text-5xl">Contact</a>
+    <a href="#booking" class="mobile-link mt-4 inline-flex items-center gap-2 px-6 py-3 rounded-full bg-sun text-ink-900 text-base font-medium">Book a visit →</a>
+  </div>
+  <div class="px-8 pb-10 text-ink-600 text-sm flex flex-col gap-1">
+    <span>+1 (555) 0192-3456</span>
+    <span>hello@lumendental.co</span>
+  </div>
+</div>
+
+<!-- ============== HERO ============== -->
+<section id="home" class="relative min-h-[100svh] overflow-hidden bg-paper">
+  <canvas id="hero-canvas"></canvas>
+  <div class="grain"></div>
+  <div class="hero-fade"></div>
+
+  <div class="relative z-10 max-w-[1400px] mx-auto px-6 lg:px-10 pt-36 lg:pt-44 pb-24 min-h-[100svh] flex flex-col justify-between">
+    <!-- Top tag -->
+    <div class="flex items-center gap-3 reveal" data-stagger="0">
+      <span class="w-8 h-px bg-sun"></span>
+      <span class="text-xs tracking-[0.2em] uppercase text-ink-700">Est. 2008 · Premier Dental Care</span>
+    </div>
+
+    <!-- Centerpiece -->
+    <div class="grid lg:grid-cols-12 gap-8 items-end mt-12 lg:mt-0">
+      <div class="lg:col-span-9">
+        <h1 class="font-display text-[14vw] lg:text-[9.5vw] leading-[0.92] tracking-tight">
+          <span class="block reveal" data-stagger="1">A calmer kind</span>
+          <span class="block reveal" data-stagger="2">of <span class="italic-display text-sun-deep">dentistry</span>.</span>
+        </h1>
+      </div>
+      <div class="lg:col-span-3 reveal" data-stagger="3">
+        <p class="text-ink-700 text-base leading-relaxed max-w-xs">
+          Lumen Dental blends precise modern technique with the warmth of an old neighborhood practice. We take our time. So your smile lasts.
+        </p>
+        <div class="mt-7 flex flex-wrap items-center gap-4">
+          <a href="#booking" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-sun text-ink-900 font-medium btn-shine hover:bg-sun-light transition-colors">
+            Book your visit
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 11L11 3M11 3H4M11 3V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </a>
+          <a href="#services" class="inline-flex items-center gap-2 text-ink-900 text-sm border-b border-ink-900/40 pb-1 hover:border-sun hover:text-sun-deep transition-colors">
+            Explore services
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom row -->
+    <div class="mt-16 lg:mt-24 flex flex-col lg:flex-row gap-6 lg:gap-12 lg:items-end justify-between">
+      <div class="reveal" data-stagger="4">
+        <p class="text-ink-600 text-xs tracking-[0.2em] uppercase mb-3">Trusted by</p>
+        <div class="flex items-center gap-6 text-ink-700">
+          <span class="font-display text-3xl">12k+</span>
+          <span class="text-sm leading-tight max-w-[160px]">patients welcomed since opening</span>
+        </div>
+      </div>
+      <div class="reveal" data-stagger="5">
+        <p class="text-ink-600 text-xs tracking-[0.2em] uppercase mb-3">Recognition</p>
+        <div class="flex items-center gap-6 text-ink-700">
+          <span class="font-display text-3xl">4.9<span class="text-sun-deep">/5</span></span>
+          <span class="text-sm leading-tight max-w-[160px]">across 1,200+ verified reviews</span>
+        </div>
+      </div>
+      <div class="reveal hidden lg:flex items-center gap-3 text-ink-700 text-xs tracking-[0.18em] uppercase" data-stagger="6">
+        <span>Scroll</span>
+        <span class="w-12 h-px bg-ink-100/40"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== MARQUEE ============== -->
+<section class="border-y border-ink-900/10 bg-paper-2 overflow-hidden py-6">
+  <div class="marquee-track text-ink-700">
+    <div class="flex items-center gap-12 pr-12 whitespace-nowrap">
+      <span class="font-display italic-display text-3xl">General Dentistry</span>
+      <span class="text-sun-deep text-2xl">✦</span>
+      <span class="font-display italic-display text-3xl">Cosmetic Care</span>
+      <span class="text-sun-deep text-2xl">✦</span>
+      <span class="font-display italic-display text-3xl">Orthodontics</span>
+      <span class="text-sun-deep text-2xl">✦</span>
+      <span class="font-display italic-display text-3xl">Implants</span>
+      <span class="text-sun-deep text-2xl">✦</span>
+      <span class="font-display italic-display text-3xl">Whitening</span>
+      <span class="text-sun-deep text-2xl">✦</span>
+      <span class="font-display italic-display text-3xl">Pediatric</span>
+      <span class="text-sun-deep text-2xl">✦</span>
+    </div>
+    <div class="flex items-center gap-12 pr-12 whitespace-nowrap" aria-hidden="true">
+      <span class="font-display italic-display text-3xl">General Dentistry</span>
+      <span class="text-sun-deep text-2xl">✦</span>
+      <span class="font-display italic-display text-3xl">Cosmetic Care</span>
+      <span class="text-sun-deep text-2xl">✦</span>
+      <span class="font-display italic-display text-3xl">Orthodontics</span>
+      <span class="text-sun-deep text-2xl">✦</span>
+      <span class="font-display italic-display text-3xl">Implants</span>
+      <span class="text-sun-deep text-2xl">✦</span>
+      <span class="font-display italic-display text-3xl">Whitening</span>
+      <span class="text-sun-deep text-2xl">✦</span>
+      <span class="font-display italic-display text-3xl">Pediatric</span>
+      <span class="text-sun-deep text-2xl">✦</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============== ABOUT / CLINIC INFO ============== -->
+<section id="about" class="relative py-24 lg:py-36 px-6 lg:px-10">
+  <div class="max-w-[1400px] mx-auto">
+    <div class="grid lg:grid-cols-12 gap-10 lg:gap-16">
+      <div class="lg:col-span-5">
+        <p class="sec-marker mb-6">— 01 / The Clinic</p>
+        <h2 class="font-display text-5xl lg:text-7xl leading-[0.95] tracking-tight reveal">
+          A practice built<br/>around <span class="italic-display text-sun-deep">care</span>,<br/>not the clock.
+        </h2>
+      </div>
+
+      <div class="lg:col-span-6 lg:col-start-7 flex flex-col gap-8">
+        <p class="text-ink-700 text-lg leading-relaxed reveal">
+          For over fifteen years, Lumen has been a quiet refuge for people who'd rather not think about the dentist. We design each visit around stillness — soft light, unhurried conversation, and tools so quiet you'll forget they're there.
+        </p>
+        <p class="text-ink-600 leading-relaxed reveal">
+          Our team is small on purpose. Every patient sees the same faces, every time. We invest in the highest standard of equipment, but never let it come between you and us.
+        </p>
+
+        <div class="grid grid-cols-2 gap-6 mt-4">
+          <div class="reveal">
+            <p class="font-display text-5xl text-sun-deep stat-num" data-count="15">0</p>
+            <p class="text-ink-700 text-sm mt-1">Years of practice</p>
+          </div>
+          <div class="reveal">
+            <p class="font-display text-5xl text-sun-deep stat-num" data-count="12000">0</p>
+            <p class="text-ink-700 text-sm mt-1">Patients welcomed</p>
+          </div>
+          <div class="reveal">
+            <p class="font-display text-5xl text-sun-deep stat-num" data-count="48">0</p>
+            <p class="text-ink-700 text-sm mt-1">Specialist procedures</p>
+          </div>
+          <div class="reveal">
+            <p class="font-display text-5xl text-sun-deep stat-num" data-count="98" data-suffix="%">0%</p>
+            <p class="text-ink-700 text-sm mt-1">Return patient rate</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hours / Location bar -->
+    <div class="hairline mt-24 mb-12"></div>
+    <div class="grid md:grid-cols-3 gap-8">
+      <div class="reveal">
+        <p class="text-xs tracking-[0.2em] uppercase text-sun-deep mb-3">Visit</p>
+        <p class="font-display text-2xl leading-snug">42 Rosemont Ave.<br/>Suite 4B, Brooklyn NY</p>
+      </div>
+      <div class="reveal">
+        <p class="text-xs tracking-[0.2em] uppercase text-sun-deep mb-3">Hours</p>
+        <p class="font-display text-2xl leading-snug">Mon–Fri · 8a–6p<br/>Sat · 9a–2p</p>
+      </div>
+      <div class="reveal">
+        <p class="text-xs tracking-[0.2em] uppercase text-sun-deep mb-3">Reach</p>
+        <p class="font-display text-2xl leading-snug">+1 (555) 0192-3456<br/>hello@lumendental.co</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== SERVICES ============== -->
+<section id="services" class="relative py-24 lg:py-36 px-6 lg:px-10 bg-paper-2">
+  <div class="max-w-[1400px] mx-auto">
+    <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 mb-16">
+      <div>
+        <p class="sec-marker mb-6">— 02 / Services</p>
+        <h2 class="font-display text-5xl lg:text-7xl leading-[0.95] tracking-tight reveal">
+          What we <span class="italic-display text-sun-deep">do</span><br/>quietly well.
+        </h2>
+      </div>
+      <p class="text-ink-700 max-w-md leading-relaxed reveal">
+        From routine check-ups to full-mouth restorations, every treatment is performed in-house by clinicians who specialize in it.
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-px bg-ink-900/10 border border-ink-900/10">
+      <!-- Service 1 -->
+      <div class="service-card bg-paper-1 p-8 lg:p-10 min-h-[320px] flex flex-col justify-between reveal">
+        <span class="num">01</span>
+        <div>
+          <svg width="44" height="44" viewBox="0 0 44 44" fill="none" class="text-sun-deep mb-6">
+            <path d="M22 6c-4.5 0-7 2-9 2s-4-1.3-5.5 1c-2 3-1.5 8.5 0 13 1 3 2 5.5 3 8 .8 2 2 3 3.3 3 1.6 0 2.3-2 3-4 .7-2 1.7-3.5 3.2-3.5s2.5 1.5 3.2 3.5c.7 2 1.4 4 3 4 1.3 0 2.5-1 3.3-3 1-2.5 2-5 3-8 1.5-4.5 2-10 0-13-1.5-2.3-3.5-1-5.5-1S26.5 6 22 6z" stroke="currentColor" stroke-width="1.5"/>
+          </svg>
+          <h3 class="font-display text-3xl leading-tight">General<br/>Dentistry</h3>
+        </div>
+        <div class="flex items-end justify-between mt-6">
+          <p class="text-ink-700 text-sm leading-relaxed max-w-[220px]">Cleanings, fillings, exams, and preventive care.</p>
+          <svg class="arrow text-sun-deep" width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M5 17L17 5M17 5H7M17 5V15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+
+      <!-- Service 2 -->
+      <div class="service-card bg-paper-1 p-8 lg:p-10 min-h-[320px] flex flex-col justify-between reveal">
+        <span class="num">02</span>
+        <div>
+          <svg width="44" height="44" viewBox="0 0 44 44" fill="none" class="text-sun-deep mb-6">
+            <circle cx="22" cy="22" r="14" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M14 22c0-4.5 3.5-8 8-8M22 14v-4M30 22h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M22 22l5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <h3 class="font-display text-3xl leading-tight">Cosmetic<br/>& Whitening</h3>
+        </div>
+        <div class="flex items-end justify-between mt-6">
+          <p class="text-ink-700 text-sm leading-relaxed max-w-[220px]">Veneers, bonding, and gentle in-chair whitening.</p>
+          <svg class="arrow text-sun-deep" width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M5 17L17 5M17 5H7M17 5V15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+
+      <!-- Service 3 -->
+      <div class="service-card bg-paper-1 p-8 lg:p-10 min-h-[320px] flex flex-col justify-between reveal">
+        <span class="num">03</span>
+        <div>
+          <svg width="44" height="44" viewBox="0 0 44 44" fill="none" class="text-sun-deep mb-6">
+            <path d="M8 14c4 4 22 4 28 0M8 30c4-4 22-4 28 0M14 14v16M22 14v16M30 14v16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <h3 class="font-display text-3xl leading-tight">Orthodontics<br/>& Aligners</h3>
+        </div>
+        <div class="flex items-end justify-between mt-6">
+          <p class="text-ink-700 text-sm leading-relaxed max-w-[220px]">Invisible aligners and traditional braces — adults welcome.</p>
+          <svg class="arrow text-sun-deep" width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M5 17L17 5M17 5H7M17 5V15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+
+      <!-- Service 4 -->
+      <div class="service-card bg-paper-1 p-8 lg:p-10 min-h-[320px] flex flex-col justify-between reveal">
+        <span class="num">04</span>
+        <div>
+          <svg width="44" height="44" viewBox="0 0 44 44" fill="none" class="text-sun-deep mb-6">
+            <path d="M22 8v18M22 26c-3 0-6 2-6 5h12c0-3-3-5-6-5z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M16 14h12M14 18h16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <h3 class="font-display text-3xl leading-tight">Dental<br/>Implants</h3>
+        </div>
+        <div class="flex items-end justify-between mt-6">
+          <p class="text-ink-700 text-sm leading-relaxed max-w-[220px]">Single & full-arch implants, planned with 3D imaging.</p>
+          <svg class="arrow text-sun-deep" width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M5 17L17 5M17 5H7M17 5V15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+
+      <!-- Service 5 -->
+      <div class="service-card bg-paper-1 p-8 lg:p-10 min-h-[320px] flex flex-col justify-between reveal">
+        <span class="num">05</span>
+        <div>
+          <svg width="44" height="44" viewBox="0 0 44 44" fill="none" class="text-sun-deep mb-6">
+            <circle cx="22" cy="18" r="6" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M10 36c0-6 5.5-10 12-10s12 4 12 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <h3 class="font-display text-3xl leading-tight">Pediatric<br/>Dentistry</h3>
+        </div>
+        <div class="flex items-end justify-between mt-6">
+          <p class="text-ink-700 text-sm leading-relaxed max-w-[220px]">Calm, story-led visits for children of every age.</p>
+          <svg class="arrow text-sun-deep" width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M5 17L17 5M17 5H7M17 5V15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+
+      <!-- Service 6 -->
+      <div class="service-card bg-paper-1 p-8 lg:p-10 min-h-[320px] flex flex-col justify-between reveal">
+        <span class="num">06</span>
+        <div>
+          <svg width="44" height="44" viewBox="0 0 44 44" fill="none" class="text-sun-deep mb-6">
+            <path d="M22 4l3 8h8l-6.5 5 2.5 9-7-5-7 5 2.5-9L11 12h8z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M14 38h16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <h3 class="font-display text-3xl leading-tight">Emergency<br/>Care</h3>
+        </div>
+        <div class="flex items-end justify-between mt-6">
+          <p class="text-ink-700 text-sm leading-relaxed max-w-[220px]">Same-day appointments for pain & urgent issues.</p>
+          <svg class="arrow text-sun-deep" width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M5 17L17 5M17 5H7M17 5V15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== DOCTOR PROFILE ============== -->
+<section id="doctor" class="relative py-24 lg:py-36 px-6 lg:px-10">
+  <div class="max-w-[1400px] mx-auto">
+    <div class="grid lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+
+      <div class="lg:col-span-5">
+        <div class="portrait-frame aspect-[4/5] rounded-sm border border-ink-900/10 reveal-x">
+          <!-- Stylized SVG portrait so the page works without external assets -->
+          <svg viewBox="0 0 400 500" class="w-full h-full" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <radialGradient id="bg" cx="50%" cy="35%" r="65%">
+                <stop offset="0%" stop-color="#3a3a3a"/>
+                <stop offset="100%" stop-color="#161616"/>
+              </radialGradient>
+              <linearGradient id="coat" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#FAFAF7"/>
+                <stop offset="100%" stop-color="#D6D6D6"/>
+              </linearGradient>
+              <linearGradient id="skin" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#E8C9A8"/>
+                <stop offset="100%" stop-color="#C9A380"/>
+              </linearGradient>
+            </defs>
+            <rect width="400" height="500" fill="url(#bg)"/>
+            <!-- Soft glow -->
+            <circle cx="200" cy="180" r="170" fill="#F5C518" opacity="0.06"/>
+            <!-- Coat shoulders -->
+            <path d="M50 500 C 50 400 110 360 200 360 C 290 360 350 400 350 500 Z" fill="url(#coat)"/>
+            <!-- Neck -->
+            <rect x="170" y="320" width="60" height="50" fill="url(#skin)"/>
+            <!-- Head -->
+            <ellipse cx="200" cy="220" rx="85" ry="100" fill="url(#skin)"/>
+            <!-- Hair -->
+            <path d="M115 200 C 115 130 160 100 200 100 C 240 100 285 130 285 200 C 285 175 270 160 250 158 C 240 145 220 138 200 138 C 180 138 160 145 150 158 C 130 160 115 175 115 200 Z" fill="#1a1a1a"/>
+            <!-- Eyes -->
+            <ellipse cx="172" cy="218" rx="5" ry="3" fill="#161616"/>
+            <ellipse cx="228" cy="218" rx="5" ry="3" fill="#161616"/>
+            <!-- Brows -->
+            <path d="M160 205 Q 172 200 184 205" stroke="#1a1a1a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <path d="M216 205 Q 228 200 240 205" stroke="#1a1a1a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <!-- Nose -->
+            <path d="M200 230 Q 197 250 192 260 Q 200 264 208 260 Q 203 250 200 230" fill="#C9A380" opacity="0.6"/>
+            <!-- Smile -->
+            <path d="M180 280 Q 200 295 220 280" stroke="#8B5A4A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <!-- Coat collar -->
+            <path d="M170 370 L 200 410 L 230 370 L 230 500 L 170 500 Z" fill="#FAFAF7"/>
+            <path d="M170 370 L 200 410 L 230 370" stroke="#A0A0A0" stroke-width="1" fill="none"/>
+            <!-- Pin -->
+            <circle cx="220" cy="395" r="4" fill="#F5C518"/>
+            <!-- Stethoscope hint / lapel -->
+            <path d="M180 380 Q 175 420 185 450" stroke="#A0A0A0" stroke-width="1.2" fill="none"/>
+          </svg>
+
+          <!-- Caption -->
+          <div class="absolute bottom-4 left-4 right-4 flex items-center justify-between text-xs text-ink-900/70">
+            <span class="italic-display">— Dr. Elena Reyes, DDS</span>
+            <span class="tracking-[0.2em]">2025</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3 mt-4">
+          <div class="aspect-square bg-paper-1 border border-ink-900/10 flex items-center justify-center text-ink-800 text-xs tracking-[0.2em] relative"><span class="absolute top-2 left-2 w-1.5 h-1.5 rounded-full bg-sun"></span>DDS</div>
+          <div class="aspect-square bg-paper-1 border border-ink-900/10 flex items-center justify-center text-ink-800 text-xs tracking-[0.2em] relative"><span class="absolute top-2 left-2 w-1.5 h-1.5 rounded-full bg-sun"></span>AGD</div>
+          <div class="aspect-square bg-paper-1 border border-ink-900/10 flex items-center justify-center text-ink-800 text-xs tracking-[0.2em] relative"><span class="absolute top-2 left-2 w-1.5 h-1.5 rounded-full bg-sun"></span>ICOI</div>
+        </div>
+      </div>
+
+      <div class="lg:col-span-7 lg:pl-8">
+        <p class="sec-marker mb-6">— 03 / The Doctor</p>
+        <h2 class="font-display text-5xl lg:text-7xl leading-[0.95] tracking-tight reveal">
+          Dr. Elena<br/><span class="italic-display text-sun-deep">Reyes</span>, DDS.
+        </h2>
+        <p class="text-ink-700 text-lg leading-relaxed mt-8 max-w-xl reveal">
+          A graduate of NYU College of Dentistry and a clinical fellow of the AGD, Dr. Reyes has spent the last decade quietly redefining what a dental visit feels like — replacing fluorescent fear with focused, conversational care.
+        </p>
+
+        <div class="mt-10 grid sm:grid-cols-2 gap-6 max-w-xl">
+          <div class="border-l border-sun pl-4 reveal">
+            <p class="text-xs uppercase tracking-[0.2em] text-ink-600 mb-1">Specialties</p>
+            <p class="text-ink-900">Implantology, Aesthetic restoration, Anxiety-conscious care</p>
+          </div>
+          <div class="border-l border-sun pl-4 reveal">
+            <p class="text-xs uppercase tracking-[0.2em] text-ink-600 mb-1">Languages</p>
+            <p class="text-ink-900">English · Spanish · Italian</p>
+          </div>
+          <div class="border-l border-sun pl-4 reveal">
+            <p class="text-xs uppercase tracking-[0.2em] text-ink-600 mb-1">Education</p>
+            <p class="text-ink-900">NYU College of Dentistry, 2011</p>
+          </div>
+          <div class="border-l border-sun pl-4 reveal">
+            <p class="text-xs uppercase tracking-[0.2em] text-ink-600 mb-1">Member of</p>
+            <p class="text-ink-900">ADA · AGD · ICOI</p>
+          </div>
+        </div>
+
+        <blockquote class="mt-12 border-t border-ink-900/10 pt-8 max-w-xl reveal">
+          <p class="font-display text-2xl lg:text-3xl leading-snug">
+            "I want my patients to feel <span class="italic-display text-sun-deep">heard</span> before they ever feel a tool."
+          </p>
+        </blockquote>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== TESTIMONIALS / REVIEWS ============== -->
+<section id="reviews" class="relative py-24 lg:py-36 px-6 lg:px-10 bg-paper-2 overflow-hidden">
+  <div class="max-w-[1400px] mx-auto">
+    <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 mb-16">
+      <div>
+        <p class="sec-marker mb-6">— 04 / In Their Words</p>
+        <h2 class="font-display text-5xl lg:text-7xl leading-[0.95] tracking-tight reveal">
+          What patients<br/><span class="italic-display text-sun-deep">say</span> about us.
+        </h2>
+      </div>
+      <div class="flex items-center gap-6 reveal">
+        <div class="flex items-center gap-1">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="#F5C518"><path d="M11 1l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="#F5C518"><path d="M11 1l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="#F5C518"><path d="M11 1l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="#F5C518"><path d="M11 1l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="#F5C518"><path d="M11 1l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+        </div>
+        <span class="text-ink-700 text-sm">4.9 average · 1,200+ reviews</span>
+      </div>
+    </div>
+
+    <div class="carousel-wrapper">
+      <div class="carousel-stage">
+        <div class="carousel-floor"></div>
+        <div class="carousel-track" id="carouselTrack">
+          <!-- Card 1 -->
+          <article class="carousel-card" data-index="0">
+            <div>
+              <svg width="36" height="28" viewBox="0 0 36 28" class="text-sun-deep mb-6"><path d="M0 28V16C0 7.2 6 0 14 0v6c-4 0-8 4-8 10h8v12H0zm20 0V16C20 7.2 26 0 34 0v6c-4 0-8 4-8 10h8v12H20z" fill="currentColor" opacity="0.7"/></svg>
+              <p class="font-display text-2xl lg:text-[28px] leading-snug text-ink-900">
+                "I'd avoided the dentist for nine years out of pure dread. Dr. Reyes turned my entire idea of what a check-up could feel like."
+              </p>
+            </div>
+            <div class="mt-10 pt-6 border-t border-ink-900/10 flex items-center justify-between">
+              <div>
+                <p class="text-ink-900">Sarah M.</p>
+                <p class="text-ink-600 text-sm">Patient since 2022</p>
+              </div>
+              <div class="flex items-center gap-0.5">
+                <svg width="16" height="16" viewBox="0 0 22 22" fill="#F5C518"><path d="M11 1l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+                <svg width="16" height="16" viewBox="0 0 22 22" fill="#F5C518"><path d="M11 1l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+                <svg width="16" height="16" viewBox="0 0 22 22" fill="#F5C518"><path d="M11 1l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+                <svg width="16" height="16" viewBox="0 0 22 22" fill="#F5C518"><path d="M11 1l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+                <svg width="16" height="16" viewBox="0 0 22 22" fill="#F5C518"><path d="M11 1l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+              </div>
+            </div>
+          </article>
+
+          <!-- Card 2 -->
+          <article class="carousel-card" data-index="1">
+            <div>
+              <svg width="36" height="28" viewBox="0 0 36 28" class="text-sun-deep mb-6"><path d="M0 28V16C0 7.2 6 0 14 0v6c-4 0-8 4-8 10h8v12H0zm20 0V16C20 7.2 26 0 34 0v6c-4 0-8 4-8 10h8v12H20z" fill="currentColor" opacity="0.7"/></svg>
+              <p class="font-display text-2xl lg:text-[28px] leading-snug text-ink-900">
+                "The whole studio feels like a quiet hotel lobby. They explained every step of my implant in plain English."
+              </p>
+            </div>
+            <div class="mt-10 pt-6 border-t border-ink-900/10 flex items-center justify-between">
+              <div>
+                <p class="text-ink-900">James O.</p>
+                <p class="text-ink-600 text-sm">Implant patient · 2024</p>
+              </div>
+              <div class="flex items-center gap-0.5">
+                <svg width="16" height="16" viewBox="0 0 22 22" fill="#F5C518"><path d="M11 1l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+                <svg width="16" height="16" viewBox="0 0 22 22" fill="#F5C518"><path d="M11 1l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+                <svg width="16" height="16" viewBox="0 0 22 22" fill="#F5C518"><path d="M11 1l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+                <svg width="16" height="16" viewBox="0 0 22 22" fill="#F5C518"><path d="M11 1l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+                <svg width="16" height="16" viewBox="0 0 22 22" fill="#F5C518"><path d="M11 1l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+              </div>
+            </div>
+          </article>
+
+          <!-- Card 3 -->
+          <article class="carousel-card" data-index="2">
+            <div>
+              <svg width="36" height="28" viewBox="0 0 36 28" class="text-sun-deep mb-6"><path d="M0 28V16C0 7.2 6 0 14 0v6c-4 0-8 4-8 10h8v12H0zm20 0V16C20 7.2 26 0 34 0v6c-4 0-8 4-8 10h8v12H20z" fill="currentColor" opacity="0.7"/></svg>
+              <p class="font-display text-2xl lg:text-[28px] leading-snug text-ink-900">
+                "My six-year-old asks when she gets to come back. That alone tells you everything about this place."
+              </p>
+            </div>
+            <div class="mt-10 pt-6 border-t border-ink-900/10 flex items-center justify-between">
+              <div>
+                <p class="text-ink-900">Priya K.</p>
+                <p class="text-ink-600 text-sm">Family patient · 2023</p>
+              </div>
+              <div class="flex items-center gap-0.5">
+                <svg width="16" height="16" viewBox="0 0 22 22" fill="#F5C518"><path d="M11 1l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+                <svg width="16" height="16" viewBox="0 0 22 22" fill="#F5C518"><path d="M11 1l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+                <svg width="16" height="16" viewBox="0 0 22 22" fill="#F5C518"><path d="M11 1l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+                <svg width="16" height="16" viewBox="0 0 22 22" fill="#F5C518"><path d="M11 1l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+                <svg width="16" height="16" viewBox="0 0 22 22" fill="#F5C518"><path d="M11 1l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+              </div>
+            </div>
+          </article>
+
+          <!-- Card 4 -->
+          <article class="carousel-card" data-index="3">
+            <div>
+              <svg width="36" height="28" viewBox="0 0 36 28" class="text-sun-deep mb-6"><path d="M0 28V16C0 7.2 6 0 14 0v6c-4 0-8 4-8 10h8v12H0zm20 0V16C20 7.2 26 0 34 0v6c-4 0-8 4-8 10h8v12H20z" fill="currentColor" opacity="0.7"/></svg>
+              <p class="font-display text-2xl lg:text-[28px] leading-snug text-ink-900">
+                "Aligners finished in 11 months. The team checked in on me weekly — never felt like a number."
+              </p>
+            </div>
+            <div class="mt-10 pt-6 border-t border-ink-900/10 flex items-center justify-between">
+              <div>
+                <p class="text-ink-900">Nina A.</p>
+                <p class="text-ink-600 text-sm">Ortho patient · 2024</p>
+              </div>
+              <div class="flex items-center gap-0.5">
+                <svg width="16" height="16" viewBox="0 0 22 22" fill="#F5C518"><path d="M11 1l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+                <svg width="16" height="16" viewBox="0 0 22 22" fill="#F5C518"><path d="M11 1l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+                <svg width="16" height="16" viewBox="0 0 22 22" fill="#F5C518"><path d="M11 1l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+                <svg width="16" height="16" viewBox="0 0 22 22" fill="#F5C518"><path d="M11 1l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+                <svg width="16" height="16" viewBox="0 0 22 22" fill="#F5C518"><path d="M11 1l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+              </div>
+            </div>
+          </article>
+
+          <!-- Card 5 -->
+          <article class="carousel-card" data-index="4">
+            <div>
+              <svg width="36" height="28" viewBox="0 0 36 28" class="text-sun-deep mb-6"><path d="M0 28V16C0 7.2 6 0 14 0v6c-4 0-8 4-8 10h8v12H0zm20 0V16C20 7.2 26 0 34 0v6c-4 0-8 4-8 10h8v12H20z" fill="currentColor" opacity="0.7"/></svg>
+              <p class="font-display text-2xl lg:text-[28px] leading-snug text-ink-900">
+                "I cracked a molar on a Saturday. They saw me within two hours, no fuss. That's how a clinic should run."
+              </p>
+            </div>
+            <div class="mt-10 pt-6 border-t border-ink-900/10 flex items-center justify-between">
+              <div>
+                <p class="text-ink-900">Daniel R.</p>
+                <p class="text-ink-600 text-sm">Emergency patient · 2025</p>
+              </div>
+              <div class="flex items-center gap-0.5">
+                <svg width="16" height="16" viewBox="0 0 22 22" fill="#F5C518"><path d="M11 1l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+                <svg width="16" height="16" viewBox="0 0 22 22" fill="#F5C518"><path d="M11 1l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+                <svg width="16" height="16" viewBox="0 0 22 22" fill="#F5C518"><path d="M11 1l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+                <svg width="16" height="16" viewBox="0 0 22 22" fill="#F5C518"><path d="M11 1l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+                <svg width="16" height="16" viewBox="0 0 22 22" fill="#F5C518"><path d="M11 1l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <div class="carousel-controls">
+        <button class="carousel-btn" id="carouselPrev" aria-label="Previous testimonial">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M11 4L6 9l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="carousel-dots" id="carouselDots">
+          <button class="carousel-dot is-active" data-go="0" aria-label="Go to testimonial 1"></button>
+          <button class="carousel-dot" data-go="1" aria-label="Go to testimonial 2"></button>
+          <button class="carousel-dot" data-go="2" aria-label="Go to testimonial 3"></button>
+          <button class="carousel-dot" data-go="3" aria-label="Go to testimonial 4"></button>
+          <button class="carousel-dot" data-go="4" aria-label="Go to testimonial 5"></button>
+        </div>
+        <button class="carousel-btn" id="carouselNext" aria-label="Next testimonial">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M7 4l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+
+      <p class="text-center text-ink-600 text-xs tracking-[0.2em] uppercase mt-6 hidden md:block">
+        Drag to rotate · Click cards to focus
+      </p>
+      <p class="text-center text-ink-600 text-xs tracking-[0.2em] uppercase mt-4 md:hidden">
+        Swipe to rotate
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============== BOOKING ============== -->
+<section id="booking" class="relative py-24 lg:py-36 px-6 lg:px-10">
+  <div class="max-w-[1400px] mx-auto grid lg:grid-cols-12 gap-10 lg:gap-16">
+    <div class="lg:col-span-5">
+      <p class="sec-marker mb-6">— 05 / Booking</p>
+      <h2 class="font-display text-5xl lg:text-7xl leading-[0.95] tracking-tight reveal">
+        Reserve<br/>your <span class="italic-display text-sun-deep">visit</span>.
+      </h2>
+      <p class="text-ink-700 leading-relaxed mt-8 max-w-md reveal">
+        Tell us a little about what you need. We'll be in touch within one business day to confirm a time that works.
+      </p>
+
+      <div class="mt-12 space-y-6">
+        <div class="flex items-start gap-4 reveal">
+          <span class="text-sun-deep font-display italic-display text-2xl mt-1">i.</span>
+          <div>
+            <p class="text-ink-900">New patients welcome</p>
+            <p class="text-ink-600 text-sm mt-1">No referral required.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-4 reveal">
+          <span class="text-sun-deep font-display italic-display text-2xl mt-1">ii.</span>
+          <div>
+            <p class="text-ink-900">Most major insurance accepted</p>
+            <p class="text-ink-600 text-sm mt-1">We'll verify benefits before your visit.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-4 reveal">
+          <span class="text-sun-deep font-display italic-display text-2xl mt-1">iii.</span>
+          <div>
+            <p class="text-ink-900">Same-day emergencies</p>
+            <p class="text-ink-600 text-sm mt-1">Call us directly: +1 (555) 0192-3456</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lg:col-span-7 lg:pl-8">
+      <form id="booking-form" class="space-y-1 reveal">
+        <div class="grid sm:grid-cols-2 gap-x-8 gap-y-2">
+          <div>
+            <label class="text-xs uppercase tracking-[0.18em] text-ink-600">Full name</label>
+            <input class="field" type="text" name="name" placeholder="Your name" required />
+          </div>
+          <div>
+            <label class="text-xs uppercase tracking-[0.18em] text-ink-600">Phone</label>
+            <input class="field" type="tel" name="phone" placeholder="+1 ___ ___ ____" required />
+          </div>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-x-8 gap-y-2 mt-8">
+          <div>
+            <label class="text-xs uppercase tracking-[0.18em] text-ink-600">Email</label>
+            <input class="field" type="email" name="email" placeholder="you@email.com" required />
+          </div>
+          <div>
+            <label class="text-xs uppercase tracking-[0.18em] text-ink-600">Service</label>
+            <select class="field" name="service" required>
+              <option value="" class="bg-paper">Choose a service</option>
+              <option value="general" class="bg-paper">General check-up</option>
+              <option value="cosmetic" class="bg-paper">Cosmetic / Whitening</option>
+              <option value="ortho" class="bg-paper">Orthodontics</option>
+              <option value="implant" class="bg-paper">Dental implants</option>
+              <option value="pediatric" class="bg-paper">Pediatric</option>
+              <option value="emergency" class="bg-paper">Emergency</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-x-8 gap-y-2 mt-8">
+          <div>
+            <label class="text-xs uppercase tracking-[0.18em] text-ink-600">Preferred date</label>
+            <input class="field" type="date" name="date" required />
+          </div>
+          <div>
+            <label class="text-xs uppercase tracking-[0.18em] text-ink-600">Preferred time</label>
+            <select class="field" name="time" required>
+              <option value="" class="bg-paper">Choose a window</option>
+              <option value="morning" class="bg-paper">Morning · 8a–11a</option>
+              <option value="midday" class="bg-paper">Midday · 11a–2p</option>
+              <option value="afternoon" class="bg-paper">Afternoon · 2p–5p</option>
+              <option value="evening" class="bg-paper">Evening · 5p–6p</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="mt-8">
+          <label class="text-xs uppercase tracking-[0.18em] text-ink-600">A note (optional)</label>
+          <textarea class="field resize-none" name="note" rows="2" placeholder="Anything we should know?"></textarea>
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mt-12">
+          <p class="text-ink-600 text-xs max-w-sm">By submitting, you agree to our privacy policy. We'll never share your information.</p>
+          <button type="submit" class="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-sun text-ink-900 font-medium btn-shine hover:bg-sun-light transition-colors text-base">
+            Request appointment
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 11L11 3M11 3H4M11 3V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ============== CONTACT / MAP ============== -->
+<section id="contact" class="relative py-24 lg:py-36 px-6 lg:px-10 bg-paper-2">
+  <div class="max-w-[1400px] mx-auto">
+    <div class="grid lg:grid-cols-12 gap-10 lg:gap-16">
+      <div class="lg:col-span-5">
+        <p class="sec-marker mb-6">— 06 / Find Us</p>
+        <h2 class="font-display text-5xl lg:text-7xl leading-[0.95] tracking-tight reveal">
+          A short walk<br/>from the <span class="italic-display text-sun-deep">park</span>.
+        </h2>
+
+        <div class="mt-10 space-y-8 reveal">
+          <div>
+            <p class="text-xs uppercase tracking-[0.2em] text-sun-deep mb-2">Address</p>
+            <p class="font-display text-2xl">42 Rosemont Avenue<br/>Suite 4B, Brooklyn NY 11215</p>
+          </div>
+          <div>
+            <p class="text-xs uppercase tracking-[0.2em] text-sun-deep mb-2">Phone</p>
+            <p class="font-display text-2xl">+1 (555) 0192-3456</p>
+          </div>
+          <div>
+            <p class="text-xs uppercase tracking-[0.2em] text-sun-deep mb-2">Email</p>
+            <p class="font-display text-2xl">hello@lumendental.co</p>
+          </div>
+        </div>
+
+        <div class="mt-10 flex gap-3 reveal">
+          <a href="#" class="w-11 h-11 rounded-full border border-ink-900/15 flex items-center justify-center hover:border-sun hover:text-sun-deep transition-colors" aria-label="Instagram">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="13" height="13" rx="3.5" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.2"/><circle cx="11.5" cy="4.5" r="0.7" fill="currentColor"/></svg>
+          </a>
+          <a href="#" class="w-11 h-11 rounded-full border border-ink-900/15 flex items-center justify-center hover:border-sun hover:text-sun-deep transition-colors" aria-label="Facebook">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 4.5h2V2H9c-1.4 0-2.5 1.1-2.5 2.5V6H5v2.5h1.5V14h2.5V8.5h2L11.5 6H9V4.5z" fill="currentColor"/></svg>
+          </a>
+          <a href="#" class="w-11 h-11 rounded-full border border-ink-900/15 flex items-center justify-center hover:border-sun hover:text-sun-deep transition-colors" aria-label="Google">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 6v2h2.8c-.4 1.2-1.5 2-2.8 2C5.3 10 4 8.7 4 7s1.3-3 3-3c.7 0 1.4.3 1.9.7l1.4-1.4C9.4 2.5 8.3 2 7 2 4.2 2 2 4.2 2 7s2.2 5 5 5 5-2.2 5-5v-1H7z" fill="currentColor"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="lg:col-span-7">
+        <!-- Stylized map -->
+        <div class="aspect-[4/3] lg:aspect-[5/4] relative overflow-hidden border border-ink-900/10 reveal">
+          <svg viewBox="0 0 600 480" class="w-full h-full" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+                <path d="M 30 0 L 0 0 0 30" fill="none" stroke="rgba(26,22,20,0.06)" stroke-width="1"/>
+              </pattern>
+            </defs>
+            <rect width="600" height="480" fill="#E5DFCE"/>
+            <rect width="600" height="480" fill="url(#grid)"/>
+
+            <!-- Roads -->
+            <path d="M0 240 L600 240" stroke="rgba(26,22,20,0.22)" stroke-width="14" fill="none"/>
+            <path d="M0 240 L600 240" stroke="rgba(245,240,226,0.6)" stroke-width="2" stroke-dasharray="6 8" fill="none"/>
+            <path d="M280 0 L280 480" stroke="rgba(26,22,20,0.18)" stroke-width="10" fill="none"/>
+            <path d="M280 0 L280 480" stroke="rgba(245,240,226,0.55)" stroke-width="2" stroke-dasharray="6 8" fill="none"/>
+            <path d="M450 0 C 460 100 440 200 480 280 C 510 360 470 440 500 480" stroke="rgba(26,22,20,0.14)" stroke-width="6" fill="none"/>
+            <path d="M0 380 L600 380" stroke="rgba(26,22,20,0.12)" stroke-width="4" fill="none"/>
+            <path d="M0 100 L600 100" stroke="rgba(26,22,20,0.12)" stroke-width="4" fill="none"/>
+
+            <!-- Park -->
+            <rect x="60" y="280" width="200" height="180" fill="rgba(245,197,24,0.18)" stroke="rgba(201,149,0,0.5)" stroke-width="1"/>
+            <text x="160" y="375" text-anchor="middle" fill="rgba(60,45,5,0.7)" font-family="Instrument Serif" font-style="italic" font-size="18">Prospect Park</text>
+
+            <!-- Buildings -->
+            <rect x="320" y="50" width="60" height="40" fill="rgba(26,22,20,0.12)"/>
+            <rect x="400" y="40" width="40" height="50" fill="rgba(26,22,20,0.10)"/>
+            <rect x="320" y="280" width="80" height="60" fill="rgba(26,22,20,0.12)"/>
+            <rect x="80" y="50" width="60" height="40" fill="rgba(26,22,20,0.10)"/>
+            <rect x="170" y="50" width="50" height="40" fill="rgba(26,22,20,0.12)"/>
+
+            <!-- Pin -->
+            <g transform="translate(330, 220)">
+              <circle r="22" fill="rgba(245,197,24,0.35)">
+                <animate attributeName="r" values="22;36;22" dur="2.4s" repeatCount="indefinite"/>
+                <animate attributeName="opacity" values="0.6;0;0.6" dur="2.4s" repeatCount="indefinite"/>
+              </circle>
+              <circle r="10" fill="#F5C518" stroke="#1A1614" stroke-width="1.5"/>
+              <circle r="4" fill="#1A1614"/>
+            </g>
+            <text x="330" y="190" text-anchor="middle" fill="#1A1614" font-family="DM Sans" font-size="11" letter-spacing="2" font-weight="600">LUMEN DENTAL</text>
+          </svg>
+
+          <!-- Map controls -->
+          <div class="absolute top-4 right-4 flex flex-col bg-paper-2/80 backdrop-blur border border-ink-900/10 rounded">
+            <button class="w-8 h-8 text-ink-900 text-lg leading-none hover:bg-sun hover:text-ink-900 transition-colors">+</button>
+            <div class="h-px bg-ink-900/10"></div>
+            <button class="w-8 h-8 text-ink-900 text-lg leading-none hover:bg-sun hover:text-ink-900 transition-colors">−</button>
+          </div>
+        </div>
+
+        <a href="https://maps.google.com" target="_blank" class="inline-flex items-center gap-2 mt-6 text-sm text-ink-900 border-b border-ink-900/30 pb-1 hover:border-sun hover:text-sun-deep transition-colors reveal">
+          Open in Google Maps
+          <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M3 11L11 3M11 3H4M11 3V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== CTA STRIP ============== -->
+<section class="relative py-24 lg:py-32 px-6 lg:px-10 bg-paper border-t border-ink-900/10">
+  <div class="max-w-[1400px] mx-auto text-center">
+    <p class="sec-marker mb-6 reveal">— Ready when you are</p>
+    <h2 class="font-display text-6xl md:text-8xl lg:text-[10vw] leading-[0.92] tracking-tight reveal">
+      Your <span class="italic-display text-sun-deep">smile</span>,<br/>kept in good hands.
+    </h2>
+    <a href="#booking" class="inline-flex items-center gap-3 mt-12 px-8 py-4 rounded-full bg-sun text-ink-900 font-medium btn-shine hover:bg-sun-light transition-colors reveal">
+      Book your visit today
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 11L11 3M11 3H4M11 3V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </a>
+  </div>
+</section>
+
+<!-- ============== FOOTER ============== -->
+<footer class="bg-paper-2 border-t border-ink-900/10 px-6 lg:px-10 pt-16 pb-10">
+  <div class="max-w-[1400px] mx-auto">
+    <div class="grid md:grid-cols-12 gap-10 lg:gap-16">
+      <div class="md:col-span-5">
+        <a href="#home" class="flex items-center gap-2">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" class="tooth-accent">
+            <path d="M16 4c-3.5 0-5.5 1.5-7 1.5S6 4.5 5 6.5C3.5 9.5 4 14 5.5 18c1 2.7 1.8 5 2.6 7 .6 1.5 1.6 2.5 2.7 2.5 1.3 0 1.8-1.5 2.5-3.5.6-1.7 1.3-3 2.7-3s2.1 1.3 2.7 3c.7 2 1.2 3.5 2.5 3.5 1.1 0 2.1-1 2.7-2.5.8-2 1.6-4.3 2.6-7 1.5-4 2-8.5.5-11.5C26 4.5 24.5 5.5 23 5.5S19.5 4 16 4z" fill="currentColor"/>
+          </svg>
+          <span class="font-display text-3xl">Lumen<span class="italic-display text-sun-deep">.</span></span>
+        </a>
+        <p class="text-ink-600 leading-relaxed mt-6 max-w-sm">
+          A modern dental clinic where time, care, and craft are taken seriously.
+        </p>
+      </div>
+
+      <div class="md:col-span-2">
+        <p class="text-xs uppercase tracking-[0.2em] text-sun-deep mb-4">Visit</p>
+        <ul class="space-y-2 text-ink-700 text-sm">
+          <li><a href="#about" class="hover:text-sun-deep transition-colors">About</a></li>
+          <li><a href="#services" class="hover:text-sun-deep transition-colors">Services</a></li>
+          <li><a href="#doctor" class="hover:text-sun-deep transition-colors">Doctor</a></li>
+          <li><a href="#reviews" class="hover:text-sun-deep transition-colors">Reviews</a></li>
+        </ul>
+      </div>
+
+      <div class="md:col-span-2">
+        <p class="text-xs uppercase tracking-[0.2em] text-sun-deep mb-4">Care</p>
+        <ul class="space-y-2 text-ink-700 text-sm">
+          <li>General Dentistry</li>
+          <li>Cosmetic & Whitening</li>
+          <li>Orthodontics</li>
+          <li>Implants</li>
+          <li>Emergency Care</li>
+        </ul>
+      </div>
+
+      <div class="md:col-span-3">
+        <p class="text-xs uppercase tracking-[0.2em] text-sun-deep mb-4">Stay in touch</p>
+        <p class="text-ink-700 text-sm leading-relaxed mb-4">Quiet emails. Once a season. Smile-care tips & studio news.</p>
+        <form id="news-form" class="flex border-b border-ink-900/20 pb-2">
+          <input type="email" placeholder="your@email.com" class="bg-transparent flex-1 outline-none text-sm placeholder-ink-500/60" required/>
+          <button class="text-sun-deep text-sm">Subscribe →</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="hairline my-10"></div>
+
+    <div class="flex flex-col md:flex-row justify-between gap-4 text-ink-600 text-xs">
+      <p>© 2025 Lumen Dental. All rights reserved.</p>
+      <div class="flex gap-6">
+        <a href="#" class="hover:text-sun-deep transition-colors">Privacy</a>
+        <a href="#" class="hover:text-sun-deep transition-colors">Terms</a>
+        <a href="#" class="hover:text-sun-deep transition-colors">Accessibility</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Toast -->
+<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] bg-sun text-ink-900 px-6 py-3.5 rounded-full font-medium shadow-2xl flex items-center gap-3">
+  <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8" fill="#0E0E0E"/><path d="M5 9l3 3 5-6" stroke="#F5C518" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span id="toast-msg">Appointment requested. We'll be in touch soon.</span>
+</div>
+
+<!-- ============== SCRIPTS ============== -->
+<script>
+/* ===========================================
+   Three.js — abstract floating geometry hero
+   =========================================== */
+(function initHeroScene() {
+  const canvas = document.getElementById('hero-canvas');
+  if (!canvas || typeof THREE === 'undefined') return;
+
+  const scene = new THREE.Scene();
+  // Warm paper background + matching fog
+  scene.fog = new THREE.Fog(0xEFE9DB, 9, 24);
+
+  const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 100);
+  camera.position.z = 10;
+
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setClearColor(0xEFE9DB, 1);
+
+  // Lights — soft daylight on paper
+  const ambient = new THREE.AmbientLight(0xfff3d6, 0.85);
+  scene.add(ambient);
+
+  const keyLight = new THREE.DirectionalLight(0xffffff, 1.0);
+  keyLight.position.set(5, 6, 8);
+  scene.add(keyLight);
+
+  const rim = new THREE.PointLight(0xF5C518, 1.6, 30);
+  rim.position.set(-6, -2, 4);
+  scene.add(rim);
+
+  const accent = new THREE.PointLight(0xffffff, 0.4, 25);
+  accent.position.set(4, -4, 6);
+  scene.add(accent);
+
+  // Materials — charcoal sculptures + yellow accents on paper
+  const matMatte = new THREE.MeshStandardMaterial({
+    color: 0x2A2520,
+    roughness: 0.6,
+    metalness: 0.1,
+    flatShading: true,
+  });
+  const matSun = new THREE.MeshStandardMaterial({
+    color: 0xF5C518,
+    roughness: 0.35,
+    metalness: 0.25,
+    emissive: 0x6a4a00,
+    emissiveIntensity: 0.25,
+  });
+  const matWhite = new THREE.MeshStandardMaterial({
+    color: 0xF5F0E2,
+    roughness: 0.65,
+    metalness: 0.05,
+  });
+  const matWire = new THREE.MeshBasicMaterial({
+    color: 0x3D3832,
+    wireframe: true,
+    transparent: true,
+    opacity: 0.18,
+  });
+
+  // Geometries
+  const geos = [
+    new THREE.IcosahedronGeometry(1, 0),
+    new THREE.OctahedronGeometry(1, 0),
+    new THREE.TorusGeometry(0.9, 0.32, 16, 60),
+    new THREE.TorusKnotGeometry(0.6, 0.22, 80, 12),
+    new THREE.DodecahedronGeometry(0.95, 0),
+  ];
+
+  const group = new THREE.Group();
+  scene.add(group);
+
+  const objects = [];
+  const COUNT = window.innerWidth < 768 ? 9 : 14;
+
+  for (let i = 0; i < COUNT; i++) {
+    const geo = geos[Math.floor(Math.random() * geos.length)];
+    const r = Math.random();
+    let mat;
+    if (r < 0.18) mat = matSun;
+    else if (r < 0.30) mat = matWhite;
+    else mat = matMatte;
+
+    const mesh = new THREE.Mesh(geo, mat);
+
+    // Position ring around center
+    const angle = (i / COUNT) * Math.PI * 2 + Math.random() * 0.4;
+    const radius = 4 + Math.random() * 5;
+    mesh.position.set(
+      Math.cos(angle) * radius,
+      (Math.random() - 0.5) * 6,
+      (Math.random() - 0.5) * 4 - 2
+    );
+
+    const s = 0.45 + Math.random() * 1.0;
+    mesh.scale.set(s, s, s);
+    mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
+
+    // Add subtle wireframe overlay to a few
+    if (Math.random() > 0.7) {
+      const wire = new THREE.Mesh(geo, matWire);
+      wire.scale.set(1.06, 1.06, 1.06);
+      mesh.add(wire);
+    }
+
+    mesh.userData = {
+      rotSpeed: { x: (Math.random() - 0.5) * 0.004, y: (Math.random() - 0.5) * 0.004 },
+      floatOffset: Math.random() * Math.PI * 2,
+      floatAmp: 0.2 + Math.random() * 0.4,
+      basePosY: mesh.position.y,
+    };
+    group.add(mesh);
+    objects.push(mesh);
+  }
+
+  // Mouse parallax
+  const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
+  window.addEventListener('mousemove', (e) => {
+    mouse.tx = (e.clientX / window.innerWidth - 0.5) * 0.5;
+    mouse.ty = (e.clientY / window.innerHeight - 0.5) * 0.5;
+  });
+
+  // Resize
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  // Animate
+  const clock = new THREE.Clock();
+  function loop() {
+    const t = clock.getElapsedTime();
+    mouse.x += (mouse.tx - mouse.x) * 0.04;
+    mouse.y += (mouse.ty - mouse.y) * 0.04;
+
+    group.rotation.y = t * 0.04 + mouse.x * 0.6;
+    group.rotation.x = mouse.y * 0.4;
+
+    objects.forEach((o, i) => {
+      o.rotation.x += o.userData.rotSpeed.x;
+      o.rotation.y += o.userData.rotSpeed.y;
+      o.position.y = o.userData.basePosY + Math.sin(t * 0.6 + o.userData.floatOffset) * o.userData.floatAmp;
+    });
+
+    renderer.render(scene, camera);
+    requestAnimationFrame(loop);
+  }
+  loop();
+})();
+
+/* ===========================================
+   GSAP — reveals, nav, marquee, stats, parallax
+   =========================================== */
+gsap.registerPlugin(ScrollTrigger);
+
+// Hero entrance (staggered)
+window.addEventListener('load', () => {
+  const heroItems = document.querySelectorAll('#home .reveal');
+  gsap.to(heroItems, {
+    y: 0, opacity: 1, duration: 1.1, ease: 'expo.out',
+    stagger: 0.12,
+  });
+});
+
+// Generic reveals on scroll
+gsap.utils.toArray('.reveal').forEach((el) => {
+  if (el.closest('#home')) return; // hero handled above
+  gsap.to(el, {
+    opacity: 1, y: 0, duration: 1, ease: 'expo.out',
+    scrollTrigger: { trigger: el, start: 'top 88%' }
+  });
+});
+
+gsap.utils.toArray('.reveal-x').forEach((el) => {
+  gsap.to(el, {
+    opacity: 1, x: 0, duration: 1.1, ease: 'expo.out',
+    scrollTrigger: { trigger: el, start: 'top 85%' }
+  });
+});
+
+// Nav background on scroll
+const nav = document.getElementById('nav');
+ScrollTrigger.create({
+  start: 'top -50',
+  end: 99999,
+  onUpdate: (self) => {
+    if (self.scroll() > 60) {
+      nav.classList.add('bg-paper-2/80', 'backdrop-blur', 'border-b', 'border-ink-900/10');
+    } else {
+      nav.classList.remove('bg-paper-2/80', 'backdrop-blur', 'border-b', 'border-ink-900/10');
+    }
+  }
+});
+
+// Counter animation
+gsap.utils.toArray('.stat-num').forEach((el) => {
+  const target = parseInt(el.dataset.count, 10);
+  const suffix = el.dataset.suffix || '';
+  const obj = { val: 0 };
+  gsap.to(obj, {
+    val: target,
+    duration: 2.2,
+    ease: 'power2.out',
+    scrollTrigger: { trigger: el, start: 'top 85%' },
+    onUpdate: () => {
+      const n = Math.round(obj.val);
+      el.textContent = (target >= 1000 ? n.toLocaleString() : n) + suffix;
+    }
+  });
+});
+
+// Hero parallax: fade out on scroll
+gsap.to('#home .relative.z-10', {
+  opacity: 0, y: -60,
+  scrollTrigger: { trigger: '#home', start: 'bottom 80%', end: 'bottom 20%', scrub: true }
+});
+
+/* ===========================================
+   Mobile menu
+   =========================================== */
+const menuToggle = document.getElementById('menu-toggle');
+const mobileMenu = document.getElementById('mobile-menu');
+menuToggle.addEventListener('click', () => {
+  mobileMenu.classList.toggle('open');
+  document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
+});
+document.querySelectorAll('.mobile-link').forEach(l => {
+  l.addEventListener('click', () => {
+    mobileMenu.classList.remove('open');
+    document.body.style.overflow = '';
+  });
+});
+
+/* ===========================================
+   Cursor dot (desktop only)
+   =========================================== */
+(function cursor() {
+  if (window.matchMedia('(hover: hover)').matches && window.innerWidth >= 1024) {
+    const dot = document.querySelector('.cursor-dot');
+    if (!dot) return;
+    let mx = 0, my = 0, dx = 0, dy = 0;
+    window.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+    function tick() {
+      dx += (mx - dx) * 0.18;
+      dy += (my - dy) * 0.18;
+      dot.style.transform = `translate(${dx}px, ${dy}px)`;
+      requestAnimationFrame(tick);
+    }
+    tick();
+    document.querySelectorAll('a, button, .service-card, input, select, textarea').forEach(el => {
+      el.addEventListener('mouseenter', () => dot.classList.add('expand'));
+      el.addEventListener('mouseleave', () => dot.classList.remove('expand'));
+    });
+  }
+})();
+
+/* ===========================================
+   3D Testimonial Carousel — Fixed
+   • Auto-rotates immediately & reliably
+   • Mobile-friendly sizing & swipe support
+   • Visible prev/next buttons (dark ink)
+   • Proper radius for each breakpoint
+   =========================================== */
+(function carousel() {
+  const track = document.getElementById('carouselTrack');
+  if (!track) return;
+
+  const cards   = Array.from(track.querySelectorAll('.carousel-card'));
+  const prevBtn = document.getElementById('carouselPrev');
+  const nextBtn = document.getElementById('carouselNext');
+  const dots    = Array.from(document.querySelectorAll('.carousel-dot'));
+
+  const N          = cards.length;
+  const ANGLE_STEP = 360 / N;
+  const isMobile   = () => window.innerWidth < 768;
+
+  let radius       = 0;
+  let currentIndex = 0;
+  let rotation     = 0;     // source-of-truth rotationY in degrees
+  let autoActive   = false; // starts false; enabled once fully arranged
+  let snapTween    = null;
+  let isDown       = false;
+  let isHovering   = false;
+  let justDragged  = false;
+  let startX       = 0;
+  let startRot     = 0;
+
+  // deg/ms  →  full rotation in ~28 s on desktop, ~22 s on mobile (feels snappier)
+  const speed = () => isMobile() ? 0.016 : 0.013;
+
+  // ── Compute radius so the 5 cards don't overlap ──────────────────────────
+  function computeRadius() {
+    const cardEl    = cards[0];
+    const cardWidth = cardEl.getBoundingClientRect().width;
+    if (!cardWidth) return 0; // not laid out yet
+    const minR = cardWidth / (2 * Math.tan(Math.PI / N));
+    // On mobile use a tighter multiplier so cards don't fly off screen
+    const mult = isMobile() ? 1.05 : 1.18;
+    return Math.max(minR * mult, cardWidth * (isMobile() ? 0.68 : 0.82));
+  }
+
+  // ── Position every card on the cylinder ──────────────────────────────────
+  function arrange() {
+    const r = computeRadius();
+    if (!r) return false; // bail if not laid out
+    radius = r;
+    cards.forEach((card, i) => {
+      card.style.transform = `rotateY(${i * ANGLE_STEP}deg) translateZ(${radius}px)`;
+    });
+    return true;
+  }
+
+  // ── Push current rotation to the DOM ─────────────────────────────────────
+  function applyRotation() {
+    gsap.set(track, { rotationY: rotation });
+    updateVisuals();
+  }
+
+  // ── Card opacities / active dot / front class ─────────────────────────────
+  // Key fix: steep power-curve so adjacent cards (72° away) are ~0% opacity
+  // when snapped, preventing bleed-through. They fade in smoothly during rotation.
+  function updateVisuals() {
+    let frontIdx  = 0;
+    let frontDist = Infinity;
+
+    cards.forEach((card, i) => {
+      let world = ((i * ANGLE_STEP) + rotation) % 360;
+      if (world >  180) world -= 360;
+      if (world < -180) world += 360;
+      const dist = Math.abs(world);
+
+      if (dist < frontDist) { frontDist = dist; frontIdx = i; }
+
+      const ARC = 78; // degrees — anything beyond this is fully hidden
+      if (dist >= ARC) {
+        // Fully hide cards that are behind/far — prevents compositor bleed-through
+        card.style.opacity        = '0';
+        card.style.visibility     = 'hidden';
+        card.style.pointerEvents  = 'none';
+      } else {
+        card.style.visibility = 'visible';
+        // Power-4 curve: front=1.0, at 72° → (6/78)^4 ≈ 0.0002 — essentially invisible
+        const t  = dist / ARC;
+        const op = Math.pow(1 - t, 4);
+        card.style.opacity       = Math.max(0, op).toFixed(4);
+        card.style.pointerEvents = dist < ANGLE_STEP * 0.4 ? 'auto' : 'none';
+        // Subtle dim on side cards
+        const bright = 0.82 + 0.18 * (1 - t);
+        card.style.filter = dist < 18
+          ? 'none'
+          : `brightness(${bright.toFixed(2)}) saturate(${(0.7 + 0.3*(1-t)).toFixed(2)})`;
+      }
+
+      card.classList.toggle('is-front', dist < ANGLE_STEP / 2);
+    });
+
+    dots.forEach((d, i) => d.classList.toggle('is-active', i === frontIdx));
+    currentIndex = frontIdx;
+  }
+
+  // ── GSAP ticker — continuous auto-rotation ────────────────────────────────
+  let prevTime = 0;
+  gsap.ticker.add((time) => {
+    if (!autoActive) { prevTime = time; return; }
+    const dt = prevTime ? (time - prevTime) * 1000 : 0; // ms delta
+    prevTime = time;
+    if (dt <= 0 || dt > 200) return; // skip huge first jump
+    rotation -= dt * speed();
+    applyRotation();
+  });
+
+  function pauseAuto()  { autoActive = false; }
+  function resumeAuto() { autoActive = true;  }
+
+  // ── Snap to a target angle, then resume auto-spin ─────────────────────────
+  function snapTo(targetRot, dur = 0.85) {
+    if (snapTween) snapTween.kill();
+    pauseAuto();
+    const obj = { r: rotation };
+    snapTween = gsap.to(obj, {
+      r: targetRot,
+      duration: dur,
+      ease: 'power3.out',
+      onUpdate()  { rotation = obj.r; applyRotation(); },
+      onComplete() {
+        rotation = targetRot;
+        applyRotation();
+        // Resume auto-spin after a short reading pause
+        if (!isHovering && !isDown) setTimeout(resumeAuto, 2200);
+      }
+    });
+  }
+
+  // ── Navigate to a card index (shortest arc) ───────────────────────────────
+  function goTo(idx) {
+    let target = -idx * ANGLE_STEP;
+    while (target - rotation >  180) target -= 360;
+    while (target - rotation < -180) target += 360;
+    snapTo(target);
+  }
+  const next = () => goTo((currentIndex + 1) % N);
+  const prev = () => goTo((currentIndex - 1 + N) % N);
+
+  prevBtn.addEventListener('click', prev);
+  nextBtn.addEventListener('click', next);
+  dots.forEach((d, i) => d.addEventListener('click', () => goTo(i)));
+
+  // Click a non-front card to bring it forward
+  cards.forEach((card, i) => {
+    card.addEventListener('click', () => {
+      if (i !== currentIndex && !justDragged) goTo(i);
+    });
+  });
+
+  // ── Drag / Swipe ──────────────────────────────────────────────────────────
+  // Drag sensitivity — wider on desktop, a bit more on mobile for responsiveness
+  const dragFactor = () => isMobile() ? 0.45 : 0.32;
+
+  function onPointerDown(e) {
+    isDown = true; justDragged = false;
+    startX = e.touches ? e.touches[0].clientX : e.clientX;
+    startRot = rotation;
+    track.classList.add('is-dragging');
+    pauseAuto();
+    if (snapTween) snapTween.kill();
+  }
+  function onPointerMove(e) {
+    if (!isDown) return;
+    const x     = e.touches ? e.touches[0].clientX : e.clientX;
+    const delta = x - startX;
+    if (Math.abs(delta) > 5) justDragged = true;
+    rotation = startRot + delta * dragFactor();
+    applyRotation();
+  }
+  function onPointerUp() {
+    if (!isDown) return;
+    isDown = false;
+    track.classList.remove('is-dragging');
+    // Snap to nearest card
+    const nearest = Math.round(-rotation / ANGLE_STEP);
+    let target    = -nearest * ANGLE_STEP;
+    while (target - rotation >  180) target -= 360;
+    while (target - rotation < -180) target += 360;
+    snapTo(target, 0.6);
+    setTimeout(() => { justDragged = false; }, 100);
+  }
+
+  // Mouse events
+  track.addEventListener('mousedown',   onPointerDown);
+  window.addEventListener('mousemove',  onPointerMove);
+  window.addEventListener('mouseup',    onPointerUp);
+  // Touch events
+  track.addEventListener('touchstart',  onPointerDown, { passive: true });
+  window.addEventListener('touchmove',  onPointerMove, { passive: true });
+  window.addEventListener('touchend',   onPointerUp);
+
+  // Pause while hovering on desktop so users can read comfortably
+  const wrapper = track.closest('.carousel-wrapper');
+  wrapper.addEventListener('mouseenter', () => { isHovering = true;  pauseAuto(); });
+  wrapper.addEventListener('mouseleave', () => {
+    isHovering = false;
+    if (!isDown && !(snapTween && snapTween.isActive())) resumeAuto();
+  });
+
+  // ── Boot — wait for real layout so getBoundingClientRect works ────────────
+  function boot() {
+    // rAF ensures the browser has painted and card widths are available
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (!arrange()) {
+          // Fallback: try once more after a paint cycle
+          setTimeout(() => { arrange(); applyRotation(); resumeAuto(); }, 120);
+          return;
+        }
+        applyRotation();
+        resumeAuto();
+      });
+    });
+  }
+
+  // Trigger boot when reviews section scrolls into view
+  ScrollTrigger.create({
+    trigger: '#reviews',
+    start: 'top 90%',
+    once: true,
+    onEnter: boot,
+  });
+
+  // Also boot immediately in case the section is already visible on load
+  boot();
+
+  // ── Re-arrange on resize ──────────────────────────────────────────────────
+  let resizeTO;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTO);
+    resizeTO = setTimeout(() => {
+      if (arrange()) {
+        rotation = -currentIndex * ANGLE_STEP;
+        applyRotation();
+      }
+    }, 180);
+  });
+})();
+
+/* ===========================================
+   Booking form
+   =========================================== */
+const form = document.getElementById('booking-form');
+const toast = document.getElementById('toast');
+const toastMsg = document.getElementById('toast-msg');
+
+function showToast(message) {
+  toastMsg.textContent = message;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3800);
+}
+
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(form));
+  if (!data.name || !data.email || !data.phone || !data.service || !data.date || !data.time) {
+    showToast('Please fill in all required fields.');
+    return;
+  }
+  // Simulate success
+  showToast(`Thanks ${data.name.split(' ')[0]} — we'll call you within 24h.`);
+  form.reset();
+});
+
+const newsForm = document.getElementById('news-form');
+newsForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  showToast("You're on the list. Welcome to Lumen.");
+  newsForm.reset();
+});
+
+// Set min date to today
+const dateInput = document.querySelector('input[type="date"]');
+if (dateInput) {
+  const today = new Date().toISOString().split('T')[0];
+  dateInput.min = today;
+}
+</script>
+
+</body>
+</html>
